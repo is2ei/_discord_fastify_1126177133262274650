@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "start": "node index.mjs"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "fastify": "^4.19.2"
+  }
+}
