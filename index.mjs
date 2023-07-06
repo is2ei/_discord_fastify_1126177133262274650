@@ -5,8 +5,6 @@ const fastify = Fastify({
 })
 
 fastify.get('/stream', async (request, reply) => {
-  // stream the video file
-  reply.header('Content-Type', 'application/octet-stream')  
   const range = request.headers.range
 
   if (range != null) {
@@ -14,12 +12,16 @@ fastify.get('/stream', async (request, reply) => {
     const videoSize = fs.statSync(videoPath).size
     const parts = range.replace(/bytes=/, '').split('-')
     const start = parseInt(parts[0], 10)
-    const end = parts[1] ? parseInt(parts[1], 10) : videoSize - 1
+    const end =
+      parts[1]
+        ? parseInt(parts[1], 10)
+        : videoSize - 1
     const chunkSize = end - start + 1
     const file = fs.createReadStream(videoPath, { start, end })
 
     await reply
       .code(206)
+      .header('Content-Type', 'application/octet-stream') 
       .header('Content-Range', `bytes ${start}-${end}/${videoSize}`)
       .header('Accept-Ranges', 'bytes')
       .header('Content-Length', chunkSize)
