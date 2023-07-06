@@ -4,6 +4,9 @@ const fastify = Fastify({
   logger: true
 })
 
+// 500KB
+const RANGE_LIMIT = 500 * 1024
+
 fastify.get('/stream', async (request, reply) => {
   const range = request.headers.range
 
@@ -15,7 +18,9 @@ fastify.get('/stream', async (request, reply) => {
     const end =
       parts[1]
         ? parseInt(parts[1], 10)
-        : videoSize - 1
+        : start + RANGE_LIMIT < videoSize - 1
+          ? start + RANGE_LIMIT
+          : videoSize - 1
     const chunkSize = end - start + 1
     const file = fs.createReadStream(videoPath, { start, end })
 
